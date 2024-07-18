@@ -1,0 +1,48 @@
+# Gradle
+/.gradle/
+/build/
+/out/
+/classes/
+
+# Intellij IDEA
+/.idea/
+*.iml
+*.ipr
+*.iws
+
+# Kotlin
+/.kotlin/
+
+# Java
+*.class
+
+# Logs
+/logs/
+*.log
+
+# Macos
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Linux
+*~
+.nfs*
+
+# Eclipse files
+/.project/
+/.classpath/
+/.settings/
+/.cproject/
+
+# VSCode
+/.vscode/
+
+# Intellij IDEA's ANTLR v4 plugin folders (https://github.com/antlr/intellij-plugin-v4/issues/491)
+/src/main/gen/
+/src/main/antlr/gen/
+/src/main/antlr/MorjLexer.tokens
