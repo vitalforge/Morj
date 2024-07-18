@@ -50,10 +50,10 @@ Hashtag                    : '#';
 RightShiftArithmetic       : '>>';
 LeftShiftArithmetic        : '<<';
 LessThan                   : '<';
-MoreThan                   : '>';
+GreaterThan                : '>';
 LessThanEquals             : '<=';
 GreaterThanEquals          : '>=';
-Equals_                    : '==';
+Equals                     : '==';
 NotEquals                  : '!=';
 BitAnd                     : '&';
 BitXOr                     : '^';
@@ -72,6 +72,7 @@ BitXorAssign               : '^=';
 BitOrAssign                : '|=';
 PowerAssign                : '**=';
 At                         : '@';
+Arrow                      : '->';
 
 // None Literals
 NoneLiteral: 'none';
@@ -116,7 +117,9 @@ Abstract  : 'abstract';
 Override  : 'override';
 
 // Soft keywords
-
+Get   : 'get';
+Set   : 'set';
+Field : 'field';
 
 // Identifiers
 Identifier              : IdentifierStart IdentifierPart*;
@@ -133,14 +136,15 @@ DoubleQuoteStringEnd         : '"' -> popMode;
 DoubleQuoteStringRef         : FieldIdentifier;
 DoubleQuoteStringText        : DoubleStringCharacter+ | '$'; // TODO: Dollar signs are handled by the ...
 DoubleQuoteStringEscapedChar : EscapeSequence;
-DoubleQuoteStringExprStart   : '${' -> pushMode(DEFAULT_MODE);
+StringOpenBrace              : '${' -> pushMode(DEFAULT_MODE);
 
 mode MultiLineDoubleQuoteStringMode;
 MultiLineDoubleQuoteStringEnd         : '"""' -> popMode;
+MultiLineDoubleQuoteStringQuote       : '"';
 MultiLineDoubleQuoteStringRef         : FieldIdentifier;
 MultiLineDoubleQuoteStringText        : DoubleStringCharacter+ | '$';
 MultiLineDoubleQuoteStringEscapedChar : EscapeSequence;
-MultiLineDoubleQuoteStringExprStart   : '${'           -> pushMode(DEFAULT_MODE);
+MutliLineStringOpenBrace              : '${'           -> type(StringOpenBrace), pushMode(DEFAULT_MODE);
 MultiLineDoubleQuoteStringNewLine     : LineTerminator -> skip;
 
 // Fragments: Numeric
