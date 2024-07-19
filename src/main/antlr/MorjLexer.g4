@@ -8,6 +8,10 @@ options {
     superClass = MorjLexerBase;
 }
 
+tokens {
+    StringOpenBrace
+}
+
 // Comments
 HashBangLine      :                           {this.IsStartOfFile()}? '#!' ~[\r\n\u2028\u2029]*;
 MultiLineComment  : '/*' .*? '*/'             -> channel(HIDDEN);
@@ -16,7 +20,7 @@ SingleLineComment : '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 // Whitespace
 WhiteSpaces      : [\t\u000B\u000C\u0020\u00A0]+ -> skip;
 LineTerminator   : [\r\n\u2028\u2029];
-LineContinuation : '\\' LineTerminator -> skip;
+LineContinuation : '\\' LineTerminator;
 
 // Braces
 OpenBracket  : '[';
@@ -43,6 +47,7 @@ Minus                      : '-';
 BitNot                     : '~';
 Not                        : '!';
 Multiply                   : '*';
+CommandStart               : '/' {this.IsCommandPossible()}? -> pushMode(CommandMode);
 Divide                     : '/';
 Modulus                    : '%';
 Power                      : '**';
@@ -73,6 +78,7 @@ BitOrAssign                : '|=';
 PowerAssign                : '**=';
 At                         : '@';
 Arrow                      : '->';
+Backtick                   : '`' -> pushMode(MinecraftMode);
 
 // None Literals
 NoneLiteral: 'none';
@@ -121,12 +127,22 @@ Get   : 'get';
 Set   : 'set';
 Field : 'field';
 
+// Minecraft keywords
+LetterD          : 'd' | 'D';
+LetterS          : 's' | 'S';
+LetterUppercaseB : 'B';
+LetterLowercaseB : 'b';
+LetterUppercaseL : 'L';
+LetterLowercaseL : 'l';
+LetterUppercaseI : 'I';
+
 // Identifiers
 Identifier              : IdentifierStart IdentifierPart*;
 IdentifierOrSoftKeyword : Identifier | Get | Set | Field;
 
 // Strings
 CharacterLiteral                : '\'' (UnicodeEscapeSequence | SingleStringCharacter) '\'';
+Apostrophe                      : '\''; // For selectors
 DoubleQuoteStringStart          : '"'   -> pushMode(DoubleQuoteStringMode);
 MultiLineDoubleQuoteStringStart : '"""' -> pushMode(MultiLineDoubleQuoteStringMode);
 
@@ -136,7 +152,7 @@ DoubleQuoteStringEnd         : '"' -> popMode;
 DoubleQuoteStringRef         : FieldIdentifier;
 DoubleQuoteStringText        : DoubleStringCharacter+ | '$'; // TODO: Dollar signs are handled by the ...
 DoubleQuoteStringEscapedChar : EscapeSequence;
-StringOpenBrace              : '${' -> pushMode(DEFAULT_MODE);
+DoubleQuoteStringExprStart   : '${' -> type(StringOpenBrace), pushMode(DEFAULT_MODE);
 
 mode MultiLineDoubleQuoteStringMode;
 MultiLineDoubleQuoteStringEnd         : '"""' -> popMode;
@@ -144,7 +160,7 @@ MultiLineDoubleQuoteStringQuote       : '"';
 MultiLineDoubleQuoteStringRef         : FieldIdentifier;
 MultiLineDoubleQuoteStringText        : DoubleStringCharacter+ | '$';
 MultiLineDoubleQuoteStringEscapedChar : EscapeSequence;
-MutliLineStringOpenBrace              : '${'           -> type(StringOpenBrace), pushMode(DEFAULT_MODE);
+MutliLineDoubleQuoteStringExprStart   : '${'           -> type(StringOpenBrace), pushMode(DEFAULT_MODE);
 MultiLineDoubleQuoteStringNewLine     : LineTerminator -> skip;
 
 // Fragments: Numeric
@@ -164,3 +180,11 @@ fragment EscapeSequence        : UnicodeEscapeSequence | EscapedIdentifier;
 fragment UnicodeEscapeSequence : 'u' HexDigit HexDigit HexDigit HexDigit;
 fragment EscapedIdentifier     : '\\' [tbrn\\"'$];
 fragment FieldIdentifier       : '$' Identifier;
+
+// Fragments: Minecraft
+mode CommandMode;
+CommandEnd: LineTerminator -> popMode;
+
+mode MinecraftMode;
+MinecraftEnd  : '`' -> popMode;
+MinecraftText : ~[`\r\n];

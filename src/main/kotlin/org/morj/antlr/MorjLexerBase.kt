@@ -17,10 +17,20 @@ abstract class MorjLexerBase(input: CharStream) : Lexer(input) {
 
     // https://stackoverflow.com/questions/53504903/parse-string-antlr/53524929#53524929
     protected fun IsMissingBrace() {
-        if (_modeStack.peek() != DEFAULT_MODE) TODO("Add error message")
+        TODO("Not yet implemented")
     }
 
     protected fun IsStartOfFile(): Boolean {
         return lastToken == null
+    }
+
+    protected fun IsCommandPossible(): Boolean {
+        // No token has been produced yet: at the start of the input,
+        // no division is possible, so a command mode _is_ possible.
+        val lastToken = this.lastToken ?: return true
+        return when (lastToken.type) {
+            MorjLexer.LineTerminator -> true
+            else -> false
+        }
     }
 }
