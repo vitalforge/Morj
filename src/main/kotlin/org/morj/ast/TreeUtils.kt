@@ -4,6 +4,20 @@ import org.antlr.v4.runtime.Parser
 import org.antlr.v4.runtime.tree.TerminalNode
 import org.antlr.v4.runtime.tree.Tree
 import org.antlr.v4.runtime.tree.Trees
+import org.morj.antlr.MorjParser.AdditiveExpressionContext
+import org.morj.antlr.MorjParser.ComparisonContext
+import org.morj.antlr.MorjParser.ConjuctionContext
+import org.morj.antlr.MorjParser.DisjunctionContext
+import org.morj.antlr.MorjParser.InfixFunctionCallContext
+import org.morj.antlr.MorjParser.InfixOperationContext
+import org.morj.antlr.MorjParser.LiteralConstantContext
+import org.morj.antlr.MorjParser.MultiplicativeExpressionContext
+import org.morj.antlr.MorjParser.PostfixUnaryExpressionContext
+import org.morj.antlr.MorjParser.PrefixUnaryExpressionContext
+import org.morj.antlr.MorjParser.PrefixUnaryOperatorContext
+import org.morj.antlr.MorjParser.PrimaryExpressionContext
+import org.morj.antlr.MorjParser.RangeExpressionContext
+import org.morj.antlr.MorjParser.SimpleIdentifierContext
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object TreeUtils {
@@ -59,9 +73,16 @@ ${l.joinToString(",$Eol") { anyToPretty(it) }}
         return "<${Trees.getNodeText(t, ruleNames.toList())}>"
     }
 
-    @Suppress("UnusedReceiverParameter")
     private fun Parser.possiblySpecialNodeToPretty(t: Tree): String? {
-        // TODO:
+        when (t) {
+            is DisjunctionContext, is ConjuctionContext, is ComparisonContext,
+            is InfixOperationContext, is InfixFunctionCallContext, is RangeExpressionContext,
+            is AdditiveExpressionContext, is MultiplicativeExpressionContext,
+            is PrefixUnaryExpressionContext, is PostfixUnaryExpressionContext,
+            is PrimaryExpressionContext, is LiteralConstantContext,
+            is SimpleIdentifierContext
+            -> if (t.childCount == 1) return anyToPretty(t.getChild(0))
+        }
         return null
     }
 
