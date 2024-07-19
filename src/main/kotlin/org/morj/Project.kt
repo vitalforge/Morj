@@ -14,8 +14,7 @@ object Project {
         logger.info { "Starting Morj" }
         val source: String =
             """
-            "${'$'}{3 + 5}"
-            
+            @e:zombie'anchored[nbt={"sus": [I; 313, 15]}]
             """.trimIndent()
         val charStream = CharStreams.fromStream(source.byteInputStream())
         val tokenStream = CommonTokenStream(MorjLexerWrapper(charStream))
