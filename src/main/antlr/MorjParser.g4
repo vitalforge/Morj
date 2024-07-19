@@ -8,33 +8,33 @@ options {
 }
 
 morjFile
-    : HashBangLine? LineTerminator* (expression LineTerminator?)* EOF
+    : Hashbang = HashBangLine? LineTerminator* (Body += expression LineTerminator?)* EOF
     ;
 
 // Type
-type
+type // redundant
     : functionType
     | parenthesizedType
     | userType
     ;
 
-userType
-    : simpleUserType (LineTerminator* Dot LineTerminator* simpleUserType)*
+userType // redundant
+    : BUFFER += simpleUserType (LineTerminator* Dot LineTerminator* BUFFER += simpleUserType)*
     ;
 
 simpleUserType
-    : simpleIdentifier (LineTerminator* typeArguments)?
+    : Id = simpleIdentifier (LineTerminator* TypeArgs = typeArguments)?
     ;
 
-parenthesizedType
-    : OpenParen LineTerminator* type LineTerminator* CloseParen
+parenthesizedType // redundant
+    : OpenParen LineTerminator* BUFFER = type LineTerminator* CloseParen
     ;
 
 functionType
     : (receiverType LineTerminator* Dot LineTerminator*)? functionTypeParameters LineTerminator* Arrow LineTerminator* type
     ;
 
-receiverType
+receiverType // redundant
     : parenthesizedType
     | userType
     ;
@@ -51,7 +51,7 @@ parameter
 
 // Expression
 expression
-    : disjunction
+    : BUFFER = disjunction
     ;
 
 // Disjunction
@@ -69,7 +69,7 @@ comparison
     : infixOperation (comparisonOperator LineTerminator* infixOperation)*
     ;
 
-comparisonOperator
+comparisonOperator // redundant
     : LessThan
     | LessThanEquals
     | GreaterThan
