@@ -34,3 +34,17 @@ logic is implemented in [MorjLexer.g4](MorjLexer.g4).
 3. Strings support unicode escape sequences.
 4. Comments are put into `HIDDEN` channel, this is planned to be used in the future.
 5. Line continuation works only outside of strings.
+
+## Parser specification
+
+Parser is implemented in [MorjParser.g4](MorjParser.g4), all utils related to Abstract Syntax Tree
+are located in [ast directory](../kotlin/org/morj/ast).
+
+There is [a list of best practices for ANTLR parsers](https://tomassetti.me/best-practices-for-antlr-parsers/).
+
+## Printing Tokens and AST
+
+Tokens are printed using [MorjLexerWrapper.kt](../kotlin/org/morj/antlr/MorjLexerWrapper.kt),
+and AST is printed using custom [TreeUtils.kt](../kotlin/org/morj/ast/TreeUtils.kt).
+
+> Additional information about pretty printer can be found [here](https://github.com/vitalforge/Morj/issues/1).
