@@ -14,7 +14,6 @@ import org.morj.antlr.MorjParser.LiteralConstantContext
 import org.morj.antlr.MorjParser.MultiplicativeExpressionContext
 import org.morj.antlr.MorjParser.PostfixUnaryExpressionContext
 import org.morj.antlr.MorjParser.PrefixUnaryExpressionContext
-import org.morj.antlr.MorjParser.PrefixUnaryOperatorContext
 import org.morj.antlr.MorjParser.PrimaryExpressionContext
 import org.morj.antlr.MorjParser.RangeExpressionContext
 import org.morj.antlr.MorjParser.SimpleIdentifierContext

@@ -54,17 +54,14 @@ expression
     : disjunction
     ;
 
-// Disjunction
 disjunction
     : conjuction (LineTerminator* Or LineTerminator* conjuction)*
     ;
 
-// Conjuction
 conjuction
     : comparison (LineTerminator* And LineTerminator* comparison)*
     ;
 
-// Comparison
 comparison
     : infixOperation (comparisonOperator LineTerminator* infixOperation)*
     ;
@@ -186,13 +183,14 @@ valueArguments
     ;
 
 valueArgument
-    : LineTerminator* (simpleIdentifier LineTerminator* Assign LineTerminator* | Ellipsis)? expression
+    : (simpleIdentifier LineTerminator* Assign LineTerminator* | Ellipsis)? expression
     ;
 
 // Primary expressions
 primaryExpression
     : parenthesizedExpression
     | simpleIdentifier
+    | targetSelector
     | literalConstant
     | stringLiteral
     ;
@@ -249,15 +247,274 @@ multiLineStringExpression
     : StringOpenBrace LineTerminator* expression LineTerminator* CloseBrace
     ;
 
-// Identifier
+// Identifiers
 simpleIdentifier
     : Identifier
     /* Soft keywords */
     | Get
     | Set
     | Field
+/* Minecraft keywords */
+    | LetterD
+    | LetterS
+    | LetterUppercaseB
+    | LetterLowercaseB
+    | LetterUppercaseL
+    | LetterLowercaseL
+    | LetterUppercaseI
     ;
 
 identifier
     : simpleIdentifier (LineTerminator* Dot simpleIdentifier)*
+    ;
+
+// Minecraft syntax:
+
+// Argument Types
+// https://minecraft.fandom.com/wiki/Argument_types
+entity
+    : targetSelector
+    | uuid
+    ;
+
+// Scoreboard
+// https://minecraft.fandom.com/wiki/Scoreboard
+scoreboardTag
+    : identifier
+    | stringLiteral
+/* Minecraft Mode */
+    ;
+
+// Target selectors
+// https://minecraft.fandom.com/wiki/Target_selectors
+targetSelector
+    : At targetSelectorVariable (Colon LineTerminator* targetSelectorType)? (
+        Apostrophe LineTerminator* scoreboardTag
+    )? targetSelectorArguments?
+    /* Minecraft Mode */
+    ;
+
+targetSelectorVariable
+    : identifier
+    /* Expressions */
+    | parenthesizedExpression
+/* Minecraft Mode */
+    ;
+
+targetSelectorType
+    : resourceLocation // entity ID
+    | tag              // entity type tag
+    /* Expressions */
+    | parenthesizedExpression
+/* Minecraft Mode */
+    ;
+
+targetSelectorArguments
+    : OpenBracket LineTerminator* (
+        targetSelectorArgument (LineTerminator* Comma LineTerminator* valueArgument)* (
+            LineTerminator* Comma
+        )? LineTerminator*
+    )? CloseBracket
+    /* Minecraft Mode */
+    ;
+
+targetSelectorArgument
+    : (targetSelectorKey LineTerminator* Assign LineTerminator* | Ellipsis) targetSelectorValue
+    ;
+
+targetSelectorKey
+    : identifier
+    /* Expression */
+    | parenthesizedExpression
+/* Minecraft Mode */
+    ;
+
+// TODO: Extend selector values
+targetSelectorValue
+    : nbtTag
+    | resourceLocation
+    /* Expression */
+    | parenthesizedExpression
+    ;
+
+// Universally Unique Identifier
+// https://minecraft.fandom.com/wiki/Universally_unique_identifier
+uuid
+    : {false}? // TODO: Minecraft Mode
+    | stringLiteral
+/* Minecraft Mode */
+    ;
+
+// Resource Location
+resourceLocation
+    : (resourceLocationNamespace Colon)? resourceLocationPath
+    /* Minecraft Mode */
+    ;
+
+resourceLocationNamespace
+    : identifier (Divide identifier)*
+    /* Minecraft Mode */
+    ;
+
+resourceLocationPath
+    : identifier
+    /* Minecraft Mode */
+    ;
+
+// Tag
+// https://minecraft.fandom.com/wiki/Tag
+tag
+    : Hashtag resourceLocation
+    /* Minecraft Mode */
+    ;
+
+// NBT format
+// https://minecraft.fandom.com/wiki/NBT_format
+nbtTag
+    : nbtByteTag
+    | nbtBooleanTag
+    | nbtShortTag
+    | nbtIntTag
+    | nbtLongTag
+    | nbtFloatTag
+    | nbtDoubleTag
+    | nbtStringTag
+    | nbtListTag
+    | nbtCompoundTag
+    | nbtByteArray
+    | nbtIntArray
+    | nbtLongArray
+/* Minecraft Mode */
+    ;
+
+nbtByteTag
+    : Minus? DecIntegerLiteral (LetterUppercaseB | LetterLowercaseB)
+    /* Minecraft Mode */
+    ;
+
+nbtBooleanTag
+    : BooleanLiteral
+    /* Minecraft Mode */
+    ;
+
+nbtShortTag
+    : Minus? DecIntegerLiteral LetterS
+    /* Minecraft Mode */
+    ;
+
+nbtIntTag
+    : DecIntegerLiteral
+    /* Minecraft Mode */
+    ;
+
+nbtLongTag
+    : DecIntegerLiteral (LetterUppercaseL | LetterLowercaseL)
+    /* Minecraft Mode */
+    ;
+
+nbtFloatTag
+    : FloatLiteral
+    /* Minecraft Mode */
+    ;
+
+nbtDoubleTag
+    : DoubleLiteral LetterD?
+    /* Minecraft Mode */
+    ;
+
+nbtStringTag
+    : stringLiteral
+    /* Minecraft Mode */
+    ;
+
+nbtListTag
+    : OpenBracket LineTerminator* (
+        nbtListTagElement (LineTerminator* Comma LineTerminator* nbtListTagElement)* (
+            LineTerminator* Comma
+        )? LineTerminator*
+    )? CloseBracket
+    /* Minecraft Mode */
+    ;
+
+nbtListTagElement
+    : nbtTag
+    /* Expression */
+    | parenthesizedExpression
+/* Minecraft Mode */
+    ;
+
+nbtCompoundTag
+    : OpenBrace LineTerminator* (
+        nbtCompoundTagItem (LineTerminator* Comma LineTerminator* nbtCompoundTagItem)* (
+            LineTerminator* Comma
+        )? LineTerminator*
+    )? CloseBrace
+    /* Minecraft Mode */
+    ;
+
+nbtCompoundTagItem
+    : nbtCompoundKey LineTerminator* Colon LineTerminator* nbtCompoundValue
+    ;
+
+nbtCompoundKey
+    : identifier
+    | stringLiteral
+/* Expression */
+    | parenthesizedExpression
+/* Minecraft Mode */
+    ;
+
+nbtCompoundValue
+    : nbtTag
+    /* Expression */
+    | parenthesizedExpression
+/* Minecraft Mode */
+    ;
+
+nbtByteArray
+    : OpenBracket LineTerminator* LetterUppercaseB SemiColon (
+        nbtByteArrayElement (LineTerminator* Comma LineTerminator* nbtByteArrayElement)* (
+            LineTerminator* Comma
+        )? LineTerminator*
+    )? CloseBracket
+    /* Minecraft Mode */
+    ;
+
+nbtByteArrayElement
+    : nbtByteTag
+    /* Expression */
+    | parenthesizedExpression
+/* Minecraft Mode */
+    ;
+
+nbtIntArray
+    : OpenBracket LineTerminator* LetterUppercaseI SemiColon (
+        nbtIntArrayElement (LineTerminator* Comma LineTerminator* nbtIntArrayElement)* (
+            LineTerminator* Comma
+        )? LineTerminator*
+    )? CloseBracket
+    /* Minecraft Mode */
+    ;
+
+nbtIntArrayElement
+    : nbtIntTag
+    /* Expression */
+    | parenthesizedExpression
+/* Minecraft Mode */
+    ;
+
+nbtLongArray
+    : OpenBracket LineTerminator* LetterUppercaseL SemiColon (
+        nbtLongArrayElement (LineTerminator* Comma LineTerminator* nbtLongArrayElement)* (
+            LineTerminator* Comma
+        )? LineTerminator*
+    )? CloseBracket
+    /* Minecraft Mode */
+    ;
+
+nbtLongArrayElement
+    : nbtLongTag
+    /* Expression */
+    | parenthesizedExpression
+/* Minecraft Mode */
     ;
