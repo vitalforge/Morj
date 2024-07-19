@@ -231,7 +231,7 @@ lineStringContent
     ;
 
 lineStringExpression
-    : OpenBrace LineTerminator* expression LineTerminator* CloseBrace
+    : StringOpenBrace LineTerminator* expression LineTerminator* CloseBrace
     ;
 
 multiLineStringLiteral
@@ -246,7 +246,7 @@ multiLineStringContent
     ;
 
 multiLineStringExpression
-    : OpenBrace LineTerminator* expression LineTerminator* CloseBrace
+    : StringOpenBrace LineTerminator* expression LineTerminator* CloseBrace
     ;
 
 // Identifier

@@ -5,9 +5,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import org.morj.antlr.MorjLexerWrapper
 import org.morj.antlr.MorjParser
-import org.morj.antlr.TreeUtils
-import java.util.*
-
+import org.morj.ast.TreeUtils.toPrettyTree
 
 object Project {
     private val logger = KotlinLogging.logger { }
@@ -16,13 +14,13 @@ object Project {
         logger.info { "Starting Morj" }
         val source: String =
             """
-            it
+            "${'$'}{3 + 5}"
+            
             """.trimIndent()
         val charStream = CharStreams.fromStream(source.byteInputStream())
         val tokenStream = CommonTokenStream(MorjLexerWrapper(charStream))
         val parser = MorjParser(tokenStream)
         val tree = parser.morjFile()
-        val ruleNamesList = Arrays.asList(*parser.ruleNames)
-        logger.info { "\n" + TreeUtils.toPrettyTree(tree, ruleNamesList) }
+        logger.info { "\n" + parser.toPrettyTree(tree) }
     }
 }
