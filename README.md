@@ -16,3 +16,5 @@ It'll run sanity checks before each commit. To run all checks use:
 ```shell
 ./gradlew test
 ```
+
+For JUnit5 tests read [here](src/test/README.md)

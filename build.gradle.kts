@@ -28,14 +28,26 @@ kotlin {
 
 // Tests
 tasks.test {
-    useJUnitPlatform()
+    useJUnitPlatform { excludeTags("LexerSources"); excludeTags("ParserSources") }
 }
 
 tasks.register("testBeforeCommit", Test::class) {
     group = "verification"
-    useJUnitPlatform {
-        includeTags("BeforeCommit")
-    }
+    useJUnitPlatform { includeTags("BeforeCommit") }
+}
+
+tasks.register("testLexerSources", Test::class) {
+    group = "verification"
+    useJUnitPlatform { includeTags("LexerSources") }
+    inputs.dir("morj-test-src/lexer-valid")
+    inputs.dir("morj-test-src/lexer-invalid")
+}
+
+tasks.register("testParserSources", Test::class) {
+    group = "verification"
+    useJUnitPlatform { includeTags("ParserSources") }
+    inputs.dir("morj-test-src/parser-valid")
+    inputs.dir("morj-test-src/parser-invalid")
 }
 
 // Tasks
