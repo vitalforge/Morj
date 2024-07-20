@@ -12,10 +12,14 @@ tokens {
     StringOpenBrace
 }
 
+channels {
+    MorjComment
+}
+
 // Comments
 HashBangLine      :                           {this.IsStartOfFile()}? '#!' ~[\r\n\u2028\u2029]*;
-MultiLineComment  : '/*' .*? '*/'             -> channel(HIDDEN);
-SingleLineComment : '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
+MultiLineComment  : '/*' .*? '*/'             -> channel(MorjComment);
+SingleLineComment : '//' ~[\r\n\u2028\u2029]* -> channel(MorjComment);
 
 // Whitespace
 WhiteSpaces      : [\t\u000B\u000C\u0020\u00A0]+ -> skip;
