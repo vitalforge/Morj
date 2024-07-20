@@ -2,12 +2,15 @@ package org.morj.antlr
 
 import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.CharStreams
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.*
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.stream.Stream
 import kotlin.test.Test
 
+// https://ssricardo.github.io/2018/junit-antlr-lexer/
 internal class MorjLexerTest {
-    // https://ssricardo.github.io/2018/junit-antlr-lexer/
+    private val srcDir = Paths.get("morj-test-src")
     @Suppress("SameParameterValue")
     private fun getTokenStream(txt: String): Iterator<Token> = iterator {
         val charStream = CharStreams.fromString(txt)
@@ -23,6 +26,32 @@ internal class MorjLexerTest {
     private fun getTokens(txt: String): List<Token> =
         getTokenStream(txt).asSequence().toList()
 
+    // Lexer Sources
+    @Tag("LexerSources")
+    @TestFactory
+    fun testValidSources(): Stream<DynamicTest> {
+        val files = Files.list(srcDir.resolve("lexer-valid")) ?: throw Exception("No valid sources found")
+        return files.map { path ->
+            DynamicTest.dynamicTest("Valid: ${path.fileName}") {
+                val sourceCode = Files.readString(path)
+                assertDoesNotThrow { getTokens(sourceCode) }
+            }
+        }
+    }
+
+    @Tag("LexerSources")
+    @TestFactory
+    fun testInvalidSources(): Stream<DynamicTest> {
+        val files = Files.list(srcDir.resolve("lexer-invalid")) ?: throw Exception("No invalid sources found")
+        return files.map { path ->
+            DynamicTest.dynamicTest("Invalid: ${path.fileName}") {
+                val sourceCode = Files.readString(path)
+                assertThrows<Exception> { getTokens(sourceCode) }
+            }
+        }
+    }
+
+    // Before Commit
     @Nested
     @Tag("BeforeCommit")
     inner class BeforeCommit {
@@ -39,6 +68,7 @@ internal class MorjLexerTest {
         }
     }
 
+    // Other tests
     @Test
     fun `test single line comment`() {
         val tokens = getTokens("// foo")
