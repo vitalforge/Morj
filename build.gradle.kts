@@ -26,11 +26,19 @@ kotlin {
     jvmToolchain(17)
 }
 
-// Tasks
+// Tests
 tasks.test {
     useJUnitPlatform()
 }
 
+tasks.register("testBeforeCommit", Test::class) {
+    group = "verification"
+    useJUnitPlatform {
+        includeTags("BeforeCommit")
+    }
+}
+
+// Tasks
 val antlrGeneratedSrcDirectory = File("${layout.buildDirectory.get()}/generated-src/antlr/main")
 val antlrOutputDirectory = antlrGeneratedSrcDirectory.resolve("org/morj/antlr")
 
