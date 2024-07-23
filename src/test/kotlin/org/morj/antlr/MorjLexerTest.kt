@@ -53,8 +53,8 @@ internal class MorjLexerTest {
 
     // Before Commit
     @Nested
-    @Tag("BeforeCommit")
-    inner class BeforeCommit {
+    @Tag("Sanity")
+    inner class SanityTests {
         @Test
         fun `test simple input`() {
             val tokens = getTokens("foo")

@@ -4,7 +4,10 @@ This topic describes all test tasks for Morj compiler.
 
 ## Before Commit
 
+> Git hook for pre-commit test was removed and replaced with task: `./gradlew testSanity`
+
 Make sure you've added [git hooks to pre-commit](../../README.md#development).
+
 It runs `./gradlew testBeforeCommit` before each commit, which includes all tests
 tagged with `BeforeCommit` tag. These are usually very small tests to check
 if compiler can handle the most basic cases.
