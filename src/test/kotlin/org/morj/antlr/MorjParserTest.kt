@@ -47,8 +47,8 @@ internal class MorjParserTest {
 
     // Before Commit
     @Nested
-    @Tag("BeforeCommit")
-    inner class BeforeCommit
+    @Tag("Sanity")
+    inner class SanityTests
 
     // Other tests
 }

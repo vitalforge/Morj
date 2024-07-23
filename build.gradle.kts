@@ -32,9 +32,9 @@ tasks.test {
     useJUnitPlatform { excludeTags("LexerSources"); excludeTags("ParserSources") }
 }
 
-tasks.register("testBeforeCommit", Test::class) {
+tasks.register("testSanity", Test::class) {
     group = "verification"
-    useJUnitPlatform { includeTags("BeforeCommit") }
+    useJUnitPlatform { includeTags("Sanity") }
 }
 
 tasks.register("testLexerSources", Test::class) {

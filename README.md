@@ -5,16 +5,10 @@ base of the core libraries and features.
 
 ## Development
 
-To configure pre-commit hooks use:
+To run minimal tests use:
 
 ```shell
-git config core.hooksPath .githooks
+./gradlew testSanity
 ```
 
-It'll run sanity checks before each commit. To run all checks use:
-
-```shell
-./gradlew test
-```
-
-For JUnit5 tests read [here](src/test/README.md)
+For other JUnit5 tests read [here](src/test/README.md)
