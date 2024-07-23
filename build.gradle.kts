@@ -16,6 +16,7 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     antlr("org.antlr:antlr4:4.12.0")
+    implementation("com.github.ajalt.mordant:mordant:2.7.1")
 
     // src/test
     testImplementation(kotlin("test"))
@@ -64,7 +65,7 @@ tasks.register("createAntlrDirectories") {
 tasks.register<Exec>("formatGrammarFiles") {
     group = "antlr"
     description = "Formats the ANTLR grammar files"
-    commandLine("antlr-format", "--config", "config/antlr-formatter.json", "-v", "src/main/antlr/*.g4")
+    commandLine("sh", "-c", "antlr-format --config config/antlr-formatter.json -v src/main/antlr/*.g4")
 }
 
 tasks.generateGrammarSource {
