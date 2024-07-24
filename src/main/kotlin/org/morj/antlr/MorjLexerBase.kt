@@ -4,10 +4,14 @@ import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.Lexer
 import org.antlr.v4.runtime.Token
 
-@Suppress("FunctionName", "unused")
+@Suppress("FunctionName", "unused", "MemberVisibilityCanBePrivate")
 abstract class MorjLexerBase(input: CharStream) : Lexer(input) {
-    private var lastToken: Token? = null
+    // Properties
+    internal val morjCharStream = this._input as MorjCharStream
+    internal val sourceCode: String = morjCharStream.sourceCode
 
+    // Conditions
+    private var lastToken: Token? = null
     override fun nextToken(): Token {
         val token = super.nextToken()
         if (token.channel == Token.DEFAULT_CHANNEL)

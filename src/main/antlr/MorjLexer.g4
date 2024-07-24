@@ -24,7 +24,7 @@ SingleLineComment : '//' ~[\r\n\u2028\u2029]* -> channel(MorjComment);
 // Whitespace
 WhiteSpaces      : [\t\u000B\u000C\u0020\u00A0]+ -> skip;
 LineTerminator   : [\r\n\u2028\u2029];
-LineContinuation : '\\' LineTerminator;
+LineContinuation : '\\' LineTerminator -> skip;
 
 // Braces
 OpenBracket  : '[';
@@ -82,7 +82,6 @@ BitOrAssign                : '|=';
 PowerAssign                : '**=';
 At                         : '@';
 Arrow                      : '->';
-Backtick                   : '`' -> pushMode(MinecraftMode);
 
 // None Literals
 NoneLiteral: 'none';
@@ -127,18 +126,10 @@ Abstract  : 'abstract';
 Override  : 'override';
 
 // Soft keywords
-Get   : 'get';
-Set   : 'set';
-Field : 'field';
-
-// Minecraft keywords
-LetterD          : 'd' | 'D';
-LetterS          : 's' | 'S';
-LetterUppercaseB : 'B';
-LetterLowercaseB : 'b';
-LetterUppercaseL : 'L';
-LetterLowercaseL : 'l';
-LetterUppercaseI : 'I';
+Get                    : 'get';
+Set                    : 'set';
+Field                  : 'field';
+TargetSelectorVariable : [praes];
 
 // Identifiers
 Identifier              : IdentifierStart IdentifierPart*;
@@ -150,7 +141,7 @@ Apostrophe                      : '\''; // For selectors
 DoubleQuoteStringStart          : '"'   -> pushMode(DoubleQuoteStringMode);
 MultiLineDoubleQuoteStringStart : '"""' -> pushMode(MultiLineDoubleQuoteStringMode);
 
-// Section: Inside strings
+// Inside strings
 mode DoubleQuoteStringMode;
 DoubleQuoteStringEnd         : '"' -> popMode;
 DoubleQuoteStringRef         : FieldIdentifier;
@@ -181,14 +172,132 @@ fragment IdentifierStart : [\p{L}] | [$_];
 fragment DoubleStringCharacter : ~["\\\r\n$];
 fragment SingleStringCharacter : ~['\\\r\n$];
 fragment EscapeSequence        : UnicodeEscapeSequence | EscapedIdentifier;
-fragment UnicodeEscapeSequence : 'u' HexDigit HexDigit HexDigit HexDigit;
+fragment UnicodeEscapeSequence : '\\u' HexDigit HexDigit HexDigit HexDigit;
 fragment EscapedIdentifier     : '\\' [tbrn\\"'$];
 fragment FieldIdentifier       : '$' Identifier;
 
-// Fragments: Minecraft
+//
+// Section: Minecraft
+//
+
 mode CommandMode;
+
 CommandEnd: LineTerminator -> popMode;
 
 mode MinecraftMode;
-MinecraftEnd  : '`' -> popMode;
-MinecraftText : ~[`\r\n];
+
+// Whitespace
+M_WhiteSpaces      : WhiteSpaces      -> skip;
+M_LineTerminator   : LineTerminator   -> type(LineTerminator);
+M_LineContinuation : LineContinuation -> skip;
+
+// Letters
+M_LowerLetterA : 'a';
+M_LowerLetterB : 'b';
+M_LowerLetterC : 'c';
+M_LowerLetterD : 'd';
+M_LowerLetterE : 'e';
+M_LowerLetterF : 'f';
+M_LowerLetterG : 'g';
+M_LowerLetterH : 'h';
+M_LowerLetterI : 'i';
+M_LowerLetterJ : 'j';
+M_LowerLetterK : 'k';
+M_LowerLetterL : 'l';
+M_LowerLetterM : 'm';
+M_LowerLetterN : 'n';
+M_LowerLetterO : 'o';
+M_LowerLetterP : 'p';
+M_LowerLetterQ : 'q';
+M_LowerLetterR : 'r';
+M_LowerLetterS : 's';
+M_LowerLetterT : 't';
+M_LowerLetterU : 'u';
+M_LowerLetterV : 'v';
+M_LowerLetterW : 'w';
+M_LowerLetterX : 'x';
+M_LowerLetterY : 'y';
+M_LowerLetterZ : 'z';
+
+M_UpperLetterA : 'A';
+M_UpperLetterB : 'B';
+M_UpperLetterC : 'C';
+M_UpperLetterD : 'D';
+M_UpperLetterE : 'E';
+M_UpperLetterF : 'F';
+M_UpperLetterG : 'G';
+M_UpperLetterH : 'H';
+M_UpperLetterI : 'I';
+M_UpperLetterJ : 'J';
+M_UpperLetterK : 'K';
+M_UpperLetterL : 'L';
+M_UpperLetterM : 'M';
+M_UpperLetterN : 'N';
+M_UpperLetterO : 'O';
+M_UpperLetterP : 'P';
+M_UpperLetterQ : 'Q';
+M_UpperLetterR : 'R';
+M_UpperLetterS : 'S';
+M_UpperLetterT : 'T';
+M_UpperLetterU : 'U';
+M_UpperLetterV : 'V';
+M_UpperLetterW : 'W';
+M_UpperLetterX : 'X';
+M_UpperLetterY : 'Y';
+M_UpperLetterZ : 'Z';
+
+// Operators
+M_At           : '@';
+M_Slash        : '/';
+M_Hashtag      : '#';
+M_Colon        : ':';
+M_SemiColon    : ';';
+M_Assign       : '=';
+M_OpenBracket  : '[';
+M_CloseBracket : ']';
+M_OpenBrace    : '{';
+M_CloseBrace   : '}';
+M_Comma        : ',';
+M_Exclamation  : '!';
+
+M_True  : 'true';
+M_False : 'false';
+
+M_NamespaceLikeUUID : M_UUID [a-z_.\-] [a-z0-9_.\-]*;
+M_NameLikeUUID      : M_UUID [a-zA-Z_.\-+] [a-zA-Z0-9_.\-+]*;
+M_UUID              : M_HexInt '-' M_HexShort '-' M_HexShort '-' M_HexShort '-' M_HexInt M_HexShort?;
+
+M_NamespaceLikeDoublePrefixed : M_DoublePrefixed [a-z0-9_.\-]+;
+M_NameLikeDoublePrefixed      : M_DoublePrefixed [a-zA-Z0-9_.\-+]+;
+M_DoublePrefixed              : M_Double 'd';
+
+M_NamespaceLikeFloat : M_Float [a-z0-9_.\-]+;
+M_NameLikeFloat      : M_Float [a-zA-Z0-9_.\-+]+;
+M_Float              : (M_Double | M_Decimal) 'f';
+
+M_NamespaceLikeDouble : M_Double [a-z.\-] [a-z0-9.\-]*;
+M_NameLikeDouble      : M_Double [a-zA-Z.\-+] [a-zA-Z0-9.\-+]*;
+M_Double              : '-'? [0-9]+ ('.' [0-9]+)? [eE] [+-]? [0-9]+ | '-'? [0-9]+ '.' [0-9]+;
+
+M_NamespaceLikeDecimal : M_Decimal [a-z_.\-] [a-z0-9_.\-]*;
+M_NameLikeDecimal      : M_Decimal [a-zA-Z0-9_.\-+]*;
+M_Decimal              : '-'? [0-9]+;
+
+M_NamespaceLikeHexadecimal : M_Hexadecimal [g-z_.\-] [a-z0-9_.\-]*;
+M_NameLikeHexadecimal      : M_Hexadecimal [g-zG-Z_.\-+] [a-zA-Z0-9_.\-+]*;
+M_Hexadecimal              : [0-9a-fA-F]+;
+
+M_Namespace          : [a-z0-9_.\-]+;
+M_Name               : [a-zA-Z0-9_.\-+]+;
+M_DoubleQuotedString : '"' ([^"\r\n\\] | '\\' [tbrn\\"'/] | UnicodeEscapeSequence)* '"';
+M_SingleQuotedString : '\'' ([^'\r\n\\] | '\\' [tbrn\\'"/] | UnicodeEscapeSequence)* '\'';
+
+// Bad characters
+M_BadCharacter: .;
+
+// Fragments: Minecraft
+fragment M_HexCharacter : [0-9a-fA-F];
+fragment M_HexByte      : M_HexCharacter M_HexCharacter?;
+fragment M_HexShort     : M_HexByte M_HexByte?;
+fragment M_HexInt       : M_HexShort M_HexShort?;
+fragment M_HexLong      : M_HexInt M_HexInt?;
