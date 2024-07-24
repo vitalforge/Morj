@@ -1,10 +1,7 @@
 package org.morj
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CommonTokenStream
-import org.morj.antlr.MorjLexerWrapper
-import org.morj.antlr.MorjParser
+import org.morj.antlr.*
 import org.morj.ast.TreeUtils.toPrettyTree
 
 object Project {
@@ -14,11 +11,18 @@ object Project {
         logger.info { "Starting Morj" }
         val source: String =
             """
-            @(e):zombie'anchored[nbt={"sus": [I; 313, 15]}]
+            @'inRaund( onGround )
             """.trimIndent()
-        val charStream = CharStreams.fromStream(source.byteInputStream())
-        val tokenStream = CommonTokenStream(MorjLexerWrapper(charStream))
+
+        // Lexer
+        val charStream = MorjCharStream(source)
+        val tokenStream = MorjTokenStream(MorjLexerWrapper(charStream))
+
+        // Parser
         val parser = MorjParser(tokenStream)
+        parser.overrideErrorListeners(MorjErrorListener())
+        parser.overrideParseListeners(MorjParseListener())
+
         val tree = parser.morjFile()
         logger.info { "\n" + parser.toPrettyTree(tree) }
     }
