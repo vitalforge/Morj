@@ -1,6 +1,6 @@
-# Workflow для деплоя Docusaurus в ветку gh-pages
+# Workflow для сборки и деплоя Docusaurus в ветке gh-pages
 
-name: Deploy Docusaurus site to gh-pages
+name: Deploy Docusaurus site from gh-pages branch
 
 on:
   # Запуск при пуше в ветку gh-pages
@@ -12,7 +12,7 @@ on:
 
 # Права для GITHUB_TOKEN
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -22,11 +22,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Сборка проекта
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout репозиторий
+      - name: Checkout репозитория
         uses: actions/checkout@v4
 
       - name: Установка Node.js
@@ -42,23 +41,16 @@ jobs:
         run: |
           npm run build
 
-      - name: Проверка собранного сайта
+      - name: Проверка содержимого папки build
         run: |
           ls -la ./build
 
-      - name: Загрузка артефакта
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./build
-
-  # Деплой
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-22.04
-    needs: build
-    steps:
-      - name: Деплой на GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Копирование собранного сайта в ветку gh-pages
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git checkout gh-pages
+          cp -r ./build/* ./
+          git add .
+          git commit -m "Deploy Docusaurus site"
+          git push origin gh-pages
