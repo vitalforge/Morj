@@ -6,7 +6,7 @@ name: Deploy Docusaurus site to Pages
 on:
   # Запускается при пуше в ветку main/master
   push:
-    branches: ["master"]
+    branches: ["gh-pages"]
 
   # Возможность запуска вручную
   workflow_dispatch:
