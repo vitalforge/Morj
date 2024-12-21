@@ -1,0 +1,60 @@
+# Workflow для деплоя Docusaurus в ветку gh-pages
+
+name: Deploy Docusaurus site to gh-pages
+
+on:
+  # Запуск при пуше в ветку gh-pages
+  push:
+    branches: ["gh-pages"]
+
+  # Возможность запуска вручную
+  workflow_dispatch:
+
+# Права для GITHUB_TOKEN
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Только один одновременный деплой
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Сборка проекта
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout репозиторий
+        uses: actions/checkout@v4
+
+      - name: Установка Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Установка зависимостей
+        run: |
+          npm install
+
+      - name: Сборка сайта
+        run: |
+          npm run build
+
+      - name: Загрузка артефакта
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+
+  # Деплой
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Деплой на GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
