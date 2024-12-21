@@ -24,7 +24,7 @@ concurrency:
 jobs:
   # Сборка проекта
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout репозиторий
         uses: actions/checkout@v4
@@ -42,6 +42,10 @@ jobs:
         run: |
           npm run build
 
+      - name: Проверка собранного сайта
+        run: |
+          ls -la ./build
+
       - name: Загрузка артефакта
         uses: actions/upload-pages-artifact@v3
         with:
@@ -52,7 +56,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: build
     steps:
       - name: Деплой на GitHub Pages
