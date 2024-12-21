@@ -9,7 +9,7 @@ const config: Config = {
 
 
   url: 'https://vitalforge.github.io',
-  baseUrl: '/',
+  baseUrl: '/Morj/',
   organizationName: 'vitalforge',
   projectName: 'morj',
   trailingSlash: false,
